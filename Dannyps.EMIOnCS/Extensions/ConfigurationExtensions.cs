@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Configuration;
+
 namespace Dannyps.EMIOnCS.Extensions;
 
 public static class ConfigurationExtensions

@@ -1,10 +1,12 @@
-﻿namespace Dannyps.EMIOnCS;
+﻿using Dannyps.EMIOnCS.Extensions;
+using Microsoft.Extensions.Configuration;
+
+namespace Dannyps.EMIOnCS;
 
 public class Program
 {
     public static void Main(string[] args)
     {
-        // Load settings from appsettings.json
         var configurationBuilder = new ConfigurationBuilder().AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
         var configuration = configurationBuilder.Build();
