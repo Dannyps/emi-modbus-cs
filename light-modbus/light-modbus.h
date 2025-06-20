@@ -185,6 +185,16 @@ void modbus_free(modbus_t* ctx);
 int modbus_set_debug(modbus_t* ctx, int flag);
 int modbus_set_error_recovery(modbus_t* ctx, modbus_error_recovery_mode error_recovery);
 int modbus_flush(modbus_t* ctx);
+
+/**
+ * @brief Read input registers from a Modbus device.
+ * @param ctx The Modbus context.
+ * @param addr The starting address of the input registers to read.
+ * @param nb The number of input registers to read.
+ * @param size The size of each register (2 for 16-bit, 4 for 32-bit).
+ * @param dest Pointer to the destination buffer where the read values will be stored.
+ * @return The number of registers read on success, or -1 on error with errno set.
+ */
 int modbus_read_input_registers(modbus_t* ctx, int addr, int nb, __uint8_t size, void* dest);
 int modbus_get_response_timeout(modbus_t *ctx, uint32_t *to_sec, uint32_t *to_usec);
 int modbus_set_response_timeout(modbus_t *ctx, uint32_t to_sec, uint32_t to_usec);

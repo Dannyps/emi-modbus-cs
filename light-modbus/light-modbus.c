@@ -203,11 +203,12 @@ compute_data_length_after_meta(modbus_t *ctx, uint8_t *msg, msg_type_t msg_type)
 
 static int check_confirmation(modbus_t *ctx, uint8_t *req, uint8_t *rsp, uint8_t size, int rsp_length)
 {
+    
     int rc;
     int rsp_length_computed;
     const unsigned int offset = ctx->backend->header_length;
     const int function = rsp[offset];
-
+    
     if (ctx->backend->pre_check_confirmation)
     {
         rc = ctx->backend->pre_check_confirmation(ctx, req, rsp, rsp_length);
@@ -638,7 +639,6 @@ read_registers(modbus_t *ctx, int function, int addr, int nb, u_int8_t size, voi
             memcpy((char *)dest + i, rsp + offset + 2 + i * paddedSize, size);
         }
     }
-
     return rc;
 }
 

@@ -9,7 +9,12 @@ typedef struct _modbus_rtu {
     uint8_t data_bit;
     /* Stop bit */
     uint8_t stop_bit;
-    /* Parity: 'N', 'O', 'E' */
+    /**
+     * Parity:
+     * 'N' for None,
+     * 'E' for Even,
+     * 'O' for Odd.
+     */
     char parity;
     /* Save old termios settings */
     struct termios old_tios;
