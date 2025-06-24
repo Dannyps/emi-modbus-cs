@@ -60,6 +60,19 @@ int getDoubleFromUInt16(modbus_t* ctx, uint16_t registerAddress, signed char sca
 int getDoubleFromUInt32(modbus_t* ctx, uint16_t registerAddress, signed char scaler, double* res);
 
 /**
+ * @brief Load an unsigned 8-bit integer from a Modbus register
+ * 
+ * @param ctx the modbus context.
+ * @param registerAddress the register address to read from
+ * @param res the place to store the result
+ * @return the return value from the inner modbus_read_input_registers call.
+ * 
+ * @warning This function assumes that the Modbus register contains an 8-bit signed integer.
+ *          Keep in mind that the return value is not zero on success.
+ */
+int getUnsignedFromInt8(modbus_t *ctx, uint16_t registerAddress, unsigned char *res);
+
+/**
  * @brief Get the current time from the Modbus device.
  * 
  * @param ctx the modbus context.

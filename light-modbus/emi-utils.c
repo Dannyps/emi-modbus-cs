@@ -38,10 +38,20 @@ emi_clock_t *getTime(modbus_t *ctx)
     int rc = modbus_read_input_registers(ctx, 0x0001, 1, sizeof(emi_clock_t), emiClock);
     if (rc != 0)
     {
+        free(emiClock);
+        return NULL; // Error reading registers
     }
     emiClock->year = __bswap_16(emiClock->year);
     emiClock->deviation = __bswap_16(emiClock->deviation);
     return emiClock;
+}
+
+int getUnsignedFromInt8(modbus_t *ctx, uint16_t registerAddress, unsigned char *res)
+{
+    int8_t buffer;
+    int rc = modbus_read_input_registers(ctx, registerAddress, 1, 1, &buffer);
+    *res = (unsigned char)buffer;
+    return rc;
 }
 
 void freeTime(emi_clock_t *emiClock)
