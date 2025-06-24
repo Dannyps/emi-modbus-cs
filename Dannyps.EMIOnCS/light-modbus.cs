@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Runtime.InteropServices;
 
 namespace Dannyps.EMIOnCS;
@@ -177,7 +178,7 @@ public class ModBus
 
         internal static ModBus CreateFromConfiguration(ModBusConfiguration modBusConfig)
         {
-            var builder = new ModBusBuilder(modBusConfig.Device, modBusConfig.BaudRate, modBusConfig.Parity, modBusConfig.DataBits, modBusConfig.StopBit)
+            var builder = new ModBusBuilder(modBusConfig.Device, modBusConfig.BaudRate, modBusConfig.Parity, modBusConfig.DataBits, modBusConfig.StopBits)
                 .SetSlave(modBusConfig.SlaveId)
                 .SetDebug(modBusConfig.Debug)
                 .SetErrorRecovery(ModbusErrorRecoveryMode.MODBUS_ERROR_RECOVERY_LINK | ModbusErrorRecoveryMode.MODBUS_ERROR_RECOVERY_PROTOCOL)
@@ -280,14 +281,28 @@ public class ModBus
     [DllImport(ModBusBuilder.SO_PATH, CallingConvention = CallingConvention.Cdecl)]
     private static extern void freeOctetString(IntPtr octetString);
 
-    internal class ModBusConfiguration
+    public class ModBusConfiguration
     {
+        [Required]
+        [StringLength(255, ErrorMessage = "Device path must not exceed 255 characters.")]
+        [RegularExpression(@"^/dev/ttyUSB\d+$", ErrorMessage = "Device path must match the pattern /dev/ttyUSB[0-9]+.")]
         public string Device { get; set; } = null!;
+        [Required]
+        [Range(300, 115200, ErrorMessage = "Baud rate must be between 300 and 115200.")]
         public int BaudRate { get; set; }
+        [Required]
+        [EnumDataType(typeof(Parity), ErrorMessage = "Invalid parity value. Allowed values are None, Even, Odd.")]
         public Parity Parity { get; set; } = Parity.None;
+        [Required]
+        [Range(5, 8, ErrorMessage = "Data bits must be between 5 and 8.")]
         public int DataBits { get; set; }
-        public int StopBit { get; set; }
+        [Required]
+        [Range(1, 2, ErrorMessage = "Stop bits must be either 1 or 2.")]
+        public int StopBits { get; set; }
+        [Required]
+        [Range(1, 255, ErrorMessage = "Slave ID must be between 1 and 255.")]
         public int SlaveId { get; set; }
+        
         public bool Debug { get; set; }
         
         /// <summary>

@@ -1,22 +1,31 @@
 ﻿using Dannyps.EMIOnCS.Extensions;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace Dannyps.EMIOnCS;
 
 public class Program
 {
-    public static void Main(string[] args)
+    public static void Main(string[] _args)
     {
-        var configurationBuilder = new ConfigurationBuilder().AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+        var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json", optional: false).Build();
 
-        var configuration = configurationBuilder.Build();
+        ServiceProvider sp = ConfigureServices(configuration);
 
-        var (modBusConfig, _) = configuration.ConfigureSection<ModBus.ModBusConfiguration>();
+        var appConfig = sp.GetRequiredService<IOptions<ApplicationConfiguration>>().Value;
 
-        var modbus = ModBus.ModBusBuilder.CreateFromConfiguration(modBusConfig);
+        var modbus = ModBus.ModBusBuilder.CreateFromConfiguration(appConfig.ModBusConfiguration);
+        
 
-        var value = modbus.GetTime();
+    }
 
-        Console.WriteLine($"Time from EMI device: {value}");
+    private static ServiceProvider ConfigureServices(IConfigurationRoot configuration)
+    {
+        var services = new ServiceCollection();
+
+        services.ConfigureAndValidate<ApplicationConfiguration>(configuration.Bind);
+
+        return services.BuildServiceProvider();
     }
 }
