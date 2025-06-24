@@ -11,7 +11,10 @@
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary;ForceNoAlign"
             ],
-            "problemMatcher": "$msCompile"
+            "problemMatcher": "$msCompile",
+            "dependsOn": [
+                "build-c"
+            ]
         },
         {
             "label": "publish",
@@ -23,7 +26,10 @@
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary;ForceNoAlign"
             ],
-            "problemMatcher": "$msCompile"
+            "problemMatcher": "$msCompile",
+            "dependsOn": [
+                "build-c"
+            ]
         },
         {
             "label": "watch",
@@ -35,7 +41,18 @@
                 "--project",
                 "${workspaceFolder}/Dannyps.EMIOnCS/Dannyps.EMIOnCS.csproj"
             ],
-            "problemMatcher": "$msCompile"
+            "problemMatcher": "$msCompile",
+            "dependsOn": [
+                "build-c"
+            ]
+        },
+        {
+            "label": "build-c",
+            "command": "make",
+            "type": "process",
+            "options": {
+                "cwd": "${workspaceFolder}/light-modbus"
+            }
         }
     ]
 }
