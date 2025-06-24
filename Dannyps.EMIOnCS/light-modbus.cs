@@ -224,6 +224,17 @@ public class ModBus
         return res;
     }
 
+    public byte GetUnsigned(ushort registerAddress)
+    {
+        var result = getUnsignedFromInt8(_ctx, registerAddress, out var res);
+        if (result != 1)
+        {
+            Console.WriteLine($"Error below");
+            throw new Exception($"Failed to get double from UInt32: {ModBusBuilder.ModbusStrError(result)}.");
+        }
+        return res;
+    }
+
     public string GetOctetString(ushort registerAddress, int nb)
     {
         var ptr = getOctetString(_ctx, registerAddress, nb);
@@ -270,6 +281,9 @@ public class ModBus
     private static extern int getDoubleFromUInt32(IntPtr ctx, ushort registerAddress, sbyte scaler, out double res);
 
     [DllImport(ModBusBuilder.SO_PATH, CallingConvention = CallingConvention.Cdecl)]
+    private static extern int getUnsignedFromInt8(IntPtr ctx, ushort registerAddress,out byte res);
+
+    [DllImport(ModBusBuilder.SO_PATH, CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr getOctetString(IntPtr ctx, ushort registerAddress, int nb);
 
     [DllImport(ModBusBuilder.SO_PATH, CallingConvention = CallingConvention.Cdecl)]
@@ -302,9 +316,9 @@ public class ModBus
         [Required]
         [Range(1, 255, ErrorMessage = "Slave ID must be between 1 and 255.")]
         public int SlaveId { get; set; }
-        
+
         public bool Debug { get; set; }
-        
+
         /// <summary>
         /// The response timeout in milliseconds.
         /// </summary>

@@ -32,32 +32,37 @@ public class Program
                 try
                 {
                     var data = "";
-                    switch (task.Config.Type.ToLowerInvariant())
+                    switch (task.Config.Type)
                     {
-                        case "float":
+                        case EmiConfig.DataLoadType.Float:
                             var floatData = modbus.GetDoubleFromUInt16(task.Config.GetAddressAsUShort(), task.Config.GetScalerAsSByte());
                             Console.WriteLine($"Float data for {task.Config.Name}: {floatData} {task.Config.Unit}");
                             data = floatData.ToString();
                             break;
 
-                        case "double":
+                        case EmiConfig.DataLoadType.Double:
                             var doubleData = modbus.GetDoubleFromUInt32(task.Config.GetAddressAsUShort(), task.Config.GetScalerAsSByte());
                             Console.WriteLine($"Double data for {task.Config.Name}: {doubleData} {task.Config.Unit}");
                             data = doubleData.ToString();
                             break;
 
-                        case "string":
+                        case EmiConfig.DataLoadType.String:
                             var stringData = modbus.GetOctetString(task.Config.GetAddressAsUShort(), task.Config.StringLength);
                             Console.WriteLine($"String data for {task.Config.Name}: {stringData}");
                             data = stringData;
                             break;
 
-                        case "clock":
+                        case EmiConfig.DataLoadType.Clock:
                             var clockData = modbus.GetTime();
                             Console.WriteLine($"Clock data for {task.Config.Name}: {clockData}");
                             data = clockData.ToString("o"); // ISO 8601 format
                             break;
 
+                        case EmiConfig.DataLoadType.Unsigned:
+                            var unsignedData = modbus.GetUnsigned(task.Config.GetAddressAsUShort());
+                            Console.WriteLine($"Unsigned data for {task.Config.Name}: {unsignedData} {task.Config.Unit}");
+                            data = unsignedData.ToString();
+                            break;
                         default:
                             throw new InvalidOperationException($"Unsupported data type: {task.Config.Type}");
                     }

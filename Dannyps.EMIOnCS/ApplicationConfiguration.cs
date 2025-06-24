@@ -41,7 +41,7 @@ public class EmiConfig
         /// </summary>
         [Required]
         [EnumDataType(typeof(DataLoadType), ErrorMessage = "Invalid data load type.")]
-        public string Type { get; set; } = string.Empty;
+        public DataLoadType Type { get; set; } = DataLoadType.Unset;
 
         /// <summary>
         /// The Unit of measurement for this data load.
@@ -98,7 +98,9 @@ public class EmiConfig
     {
         Float,
         Double,
+        Unsigned,
         String,
-        Clock
+        Clock,
+        Unset
     }
 }
