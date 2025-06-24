@@ -16,7 +16,67 @@ public class Program
         var appConfig = sp.GetRequiredService<IOptions<ApplicationConfiguration>>().Value;
 
         var modbus = ModBus.ModBusBuilder.CreateFromConfiguration(appConfig.ModBusConfiguration);
-        
+
+        var pollingTasks = appConfig.EmiConfig.DataLoads
+            .Select(dataLoad => new PollingTask
+            {
+                Config = dataLoad,
+                NextRun = DateTime.UtcNow
+            })
+            .ToList();
+
+        while (true)
+        {
+            foreach (var task in pollingTasks.Where(t => t.NextRun.HasValue && t.NextRun.Value <= DateTime.UtcNow))
+            {
+                try
+                {
+                    var data = "";
+                    switch (task.Config.Type.ToLowerInvariant())
+                    {
+                        case "float":
+                            var floatData = modbus.GetDoubleFromUInt16(task.Config.GetAddressAsUShort(), task.Config.GetScalerAsSByte());
+                            Console.WriteLine($"Float data for {task.Config.Name}: {floatData} {task.Config.Unit}");
+                            data = floatData.ToString();
+                            break;
+
+                        case "double":
+                            var doubleData = modbus.GetDoubleFromUInt32(task.Config.GetAddressAsUShort(), task.Config.GetScalerAsSByte());
+                            Console.WriteLine($"Double data for {task.Config.Name}: {doubleData} {task.Config.Unit}");
+                            data = doubleData.ToString();
+                            break;
+
+                        case "string":
+                            var stringData = modbus.GetOctetString(task.Config.GetAddressAsUShort(), task.Config.StringLength);
+                            Console.WriteLine($"String data for {task.Config.Name}: {stringData}");
+                            data = stringData;
+                            break;
+
+                        case "clock":
+                            var clockData = modbus.GetTime();
+                            Console.WriteLine($"Clock data for {task.Config.Name}: {clockData}");
+                            data = clockData.ToString("o"); // ISO 8601 format
+                            break;
+
+                        default:
+                            throw new InvalidOperationException($"Unsupported data type: {task.Config.Type}");
+                    }
+                    Console.WriteLine($"Data for {task.Config.Name}: {data}");
+                    // Here you would publish the data to MQTT using the configured topic.
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error reading data for {task.Config.Name}: {ex.Message}");
+                }
+
+                // Schedule the next run
+                task.NextRun = DateTime.UtcNow.AddSeconds(task.Config.PollingInterval);
+
+            }
+
+            // Sleep for a short duration to avoid busy waiting
+            Thread.Sleep(1000);
+        }
 
     }
 
@@ -28,4 +88,10 @@ public class Program
 
         return services.BuildServiceProvider();
     }
+}
+
+class PollingTask
+{
+    public DateTime? NextRun { get; set; }
+    public required EmiConfig.EmiDataLoad Config { get; set; }
 }
