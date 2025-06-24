@@ -213,9 +213,9 @@ public class ModBus
         return res;
     }
 
-    public double GetDoubleFromUInt32(ushort registerAddress)
+    public double GetDoubleFromUInt32(ushort registerAddress, sbyte scaler)
     {
-        var result = getDoubleFromUInt32(_ctx, registerAddress, out var res);
+        var result = getDoubleFromUInt32(_ctx, registerAddress, scaler, out var res);
         if (result != 1)
         {
             Console.WriteLine($"Error below");
@@ -267,7 +267,7 @@ public class ModBus
     private static extern int getDoubleFromUInt16(IntPtr ctx, ushort registerAddress, sbyte scaler, out double res);
 
     [DllImport(ModBusBuilder.SO_PATH, CallingConvention = CallingConvention.Cdecl)]
-    private static extern int getDoubleFromUInt32(IntPtr ctx, ushort registerAddress, out double res);
+    private static extern int getDoubleFromUInt32(IntPtr ctx, ushort registerAddress, sbyte scaler, out double res);
 
     [DllImport(ModBusBuilder.SO_PATH, CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr getOctetString(IntPtr ctx, ushort registerAddress, int nb);
