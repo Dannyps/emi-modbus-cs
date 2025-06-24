@@ -27,6 +27,15 @@ public class EmiConfig
         [Required]
         public string Address { get; set; } = string.Empty;
 
+        public ushort GetAddressAsUShort()
+        {
+            if (ushort.TryParse(Address.Replace("0x", ""), System.Globalization.NumberStyles.HexNumber, null, out var addressValue))
+            {
+                return addressValue;
+            }
+            throw new FormatException($"Address {Address} is not a valid hexadecimal number.");
+        }
+
         /// <summary>
         /// The type of data load, which can be Float, Double, String, or Clock.
         /// </summary>
@@ -36,8 +45,8 @@ public class EmiConfig
 
         /// <summary>
         /// The Unit of measurement for this data load.
+        /// Not all data loads admit units, so this property may not be applicable for all data loads.
         /// </summary>
-        [Required]
         public string Unit { get; set; } = string.Empty;
 
         /// <summary>
@@ -45,9 +54,24 @@ public class EmiConfig
         /// to determine how many decimal digits should be considered.
         /// For example, with a scaler of -2, the received data 98 corresponds to the value 0,98.
         /// If the scaler is 0, the received data is considered as is.
+        /// Not all data types support scalers, so this property may not be applicable for all data loads.
         /// </summary>
-        [Required]
         public int Scaler { get; set; } = 0;
+
+        /// <summary>
+        /// The length of the string data load.
+        /// This is only applicable for String data types.
+        /// </summary>
+        public ushort StringLength { get; set; } = 0;
+
+        public sbyte GetScalerAsSByte()
+        {
+            if (sbyte.TryParse(Scaler.ToString(), out var scalerValue))
+            {
+                return scalerValue;
+            }
+            throw new FormatException("Scaler is not a valid sbyte number.");
+        }
 
         /// <summary>
         /// The name of the MQTT topic to publish this data load.
