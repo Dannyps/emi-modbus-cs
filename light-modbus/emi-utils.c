@@ -56,6 +56,30 @@ int getUnsignedFromInt8(modbus_t *ctx, uint16_t registerAddress, unsigned char *
     return rc;
 }
 
+char* getOctetString(modbus_t* ctx, uint16_t registerAddress, uint8_t nb)
+{
+    // Allocate buffer for the octet string (nb bytes + null terminator)
+    char* octetString = malloc((nb + 1) * sizeof(char));
+    if (octetString == NULL)
+    {
+        return NULL; // Memory allocation failed
+    }
+    
+    // Calculate number of registers needed (nb bytes / 2 bytes per register, rounded up)
+    int numRegisters = (nb + 1) / 2;
+    int rc = modbus_read_input_registers(ctx, registerAddress, numRegisters, nb, octetString);
+    
+    if (rc == -1)
+    {
+        free(octetString);
+        return NULL; // Error reading registers
+    }
+    
+    // Null-terminate the string
+    octetString[nb] = '\0';
+    return octetString;
+}
+
 void freeTime(emi_clock_t *emiClock)
 {
     if (emiClock != NULL)

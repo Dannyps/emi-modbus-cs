@@ -230,7 +230,7 @@ public class ModBus
         if (result != 1)
         {
             Console.WriteLine($"Error below");
-            throw new Exception($"Failed to get double from UInt32: {ModBusBuilder.ModbusStrError(result)}.");
+            throw new Exception($"Failed to get unsigned byte: {ModBusBuilder.ModbusStrError(result)}.");
         }
         return res;
     }
