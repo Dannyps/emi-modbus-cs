@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-This is a C# application that interfaces with EMI (Energy Measurement Interface) devices using the Modbus RTU protocol over serial communication. The application reads data from Modbus registers and publishes the data to an MQTT broker for monitoring and integration purposes.
+This is a C# application that interfaces with EMI (Equipamento de Medição Inteligente) devices using the Modbus RTU protocol over serial communication. The application reads data from Modbus registers and publishes the data to an MQTT broker for monitoring and integration purposes.
 
 ## Architecture
 
