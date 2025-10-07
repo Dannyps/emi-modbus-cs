@@ -18,7 +18,7 @@ public struct EmiClock
     public byte ClockStatus;
 }
 
-public class ModBus
+public class ModBus : IDisposable
 {
     public interface Step1;
 
@@ -162,6 +162,12 @@ public class ModBus
         private static extern int modbus_connect(IntPtr ctx);
 
         [DllImport(SO_PATH, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void modbus_close(IntPtr ctx);
+
+        [DllImport(SO_PATH, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void modbus_free(IntPtr ctx);
+
+        [DllImport(SO_PATH, CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr modbus_strerror(int errnum);
         #endregion
 
@@ -298,6 +304,32 @@ public class ModBus
 
     [DllImport(ModBusBuilder.SO_PATH, CallingConvention = CallingConvention.Cdecl)]
     private static extern void freeOctetString(IntPtr octetString);
+
+    private bool _disposed = false;
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposed)
+        {
+            if (_ctx != IntPtr.Zero)
+            {
+                ModBusBuilder.modbus_close(_ctx);
+                ModBusBuilder.modbus_free(_ctx);
+            }
+            _disposed = true;
+        }
+    }
+
+    ~ModBus()
+    {
+        Dispose(false);
+    }
 
     public class ModBusConfiguration
     {
