@@ -118,7 +118,7 @@ public class ModBus
                     throw new ArgumentOutOfRangeException(nameof(timeSpan), "Timeout must not exceed 60000 ms (1 minute)");
             }
 
-            var result = modbus_set_response_timeout(_ctx, 0, (uint)((miliseconds % 1000) * 1000));
+            var result = modbus_set_response_timeout(_ctx, (uint)(miliseconds / 1000), (uint)((miliseconds % 1000) * 1000));
 
             if (result != 0)
             {

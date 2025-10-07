@@ -35,8 +35,10 @@ int getDoubleFromUInt32(modbus_t *ctx, uint16_t registerAddress, signed char sca
 emi_clock_t *getTime(modbus_t *ctx)
 {
     emi_clock_t *emiClock = malloc(1 * sizeof(emi_clock_t));
-    int rc = modbus_read_input_registers(ctx, 0x0001, 1, sizeof(emi_clock_t), emiClock);
-    if (rc != 0)
+    // sizeof(emi_clock_t) is 13 bytes, which spans 7 Modbus registers (13 bytes / 2 bytes per register, rounded up)
+    int nb = (sizeof(emi_clock_t) + 1) / 2;
+    int rc = modbus_read_input_registers(ctx, 0x0001, nb, sizeof(emi_clock_t), emiClock);
+    if (rc == -1)
     {
         free(emiClock);
         return NULL; // Error reading registers
