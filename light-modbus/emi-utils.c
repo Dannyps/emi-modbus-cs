@@ -20,7 +20,10 @@ int getDoubleFromUInt16(modbus_t *ctx, uint16_t registerAddress, signed char sca
 {
     uint16_t buffer;
     int rc = modbus_read_input_registers(ctx, registerAddress, 1, 2, &buffer);
-    *res = scaleInt(__bswap_16(buffer), scaler);
+    if (rc != -1)
+    {
+        *res = scaleInt(__bswap_16(buffer), scaler);
+    }
     return rc;
 }
 
@@ -28,7 +31,10 @@ int getDoubleFromUInt32(modbus_t *ctx, uint16_t registerAddress, signed char sca
 {
     uint32_t buffer;
     int rc = modbus_read_input_registers(ctx, registerAddress, 1, 4, &buffer);
-    *res = scaleInt(__bswap_32(buffer), scaler);
+    if (rc != -1)
+    {
+        *res = scaleInt(__bswap_32(buffer), scaler);
+    }
     return rc;
 }
 
@@ -52,7 +58,10 @@ int getUnsignedFromInt8(modbus_t *ctx, uint16_t registerAddress, unsigned char *
 {
     int8_t buffer;
     int rc = modbus_read_input_registers(ctx, registerAddress, 1, 1, &buffer);
-    *res = (unsigned char)buffer;
+    if (rc != -1)
+    {
+        *res = (unsigned char)buffer;
+    }
     return rc;
 }
 
