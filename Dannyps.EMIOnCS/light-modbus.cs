@@ -237,10 +237,14 @@ public class ModBus
 
     public string GetOctetString(ushort registerAddress, int nb)
     {
-        var ptr = getOctetString(_ctx, registerAddress, nb);
+        if (nb < 0 || nb > 255)
+        {
+            throw new ArgumentOutOfRangeException(nameof(nb), "Number of octets must be between 0 and 255");
+        }
+        var ptr = getOctetString(_ctx, registerAddress, (byte)nb);
         if (ptr == IntPtr.Zero)
         {
-            throw new Exception($"Failed to get octet string: {ModBusBuilder.ModbusStrError(Marshal.GetLastWin32Error())}");
+            throw new Exception($"Failed to get octet string");
         }
         try
         {
@@ -257,7 +261,7 @@ public class ModBus
         var ptr = getTime(_ctx);
         if (ptr == IntPtr.Zero)
         {
-            throw new Exception($"Failed to get time: {ModBusBuilder.ModbusStrError(Marshal.GetLastWin32Error())}");
+            throw new Exception($"Failed to get time");
         }
         try
         {
@@ -284,7 +288,7 @@ public class ModBus
     private static extern int getUnsignedFromInt8(IntPtr ctx, ushort registerAddress,out byte res);
 
     [DllImport(ModBusBuilder.SO_PATH, CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr getOctetString(IntPtr ctx, ushort registerAddress, int nb);
+    private static extern IntPtr getOctetString(IntPtr ctx, ushort registerAddress, byte nb);
 
     [DllImport(ModBusBuilder.SO_PATH, CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr getTime(IntPtr ctx);
